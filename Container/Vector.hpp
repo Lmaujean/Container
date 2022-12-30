@@ -2,10 +2,12 @@
 # define VECTOR_HPP
 #include <iostream>
 #include <memory>
+std::vector<int> test;
 
+test.operator[]();
 namespace ft
 {
-    template <class T, class Allocator = std::allocator<T>>
+    template <class T, class Allocator = std::allocator<T> >
     class vector
     {
         public:
@@ -42,6 +44,13 @@ namespace ft
             // retourne la taille de ton vecteur
             size_type size(void) const {return(_size);}
             
+            // retourne la taille de l'espace de stockage du vecteur;
+            size_type capacity() const {return(_capacity)};
+
+            reference operator[] (size_type n) {return(_data[n])};
+
+            const_reference operator[] (size_type n) {return(_data[n])};
+
             // push les éléments a l'interieur de ton vecteur
             void push_back(const value_type &val)
             {
@@ -82,7 +91,7 @@ namespace ft
             {
                 if (n < _size)
                 {
-                    for (size_type i = n; i < size; i++)
+                    for (size_type i = n; i < _size; i++)
                         _alloc.destroy(&_data[i]);
                     _size = n;
                 }
@@ -100,7 +109,7 @@ namespace ft
                             _alloc.deallocate(_data, _capacity);
                         _data = temp;
                         if (_size * 2 > n && n > _capacity)
-                            _capacity = size * 2;
+                            _capacity = _size * 2;
                         else if (_size * 2 < n && n > _capacity)
                             _capacity = n;
                         for (size_type i = _size; i < n; i++)
