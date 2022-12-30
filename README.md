@@ -1,8 +1,13 @@
 vector::assign
+
 vector::at              [x]
+
 vector::back
+
 vector::begin
+
 vector::capacity        [x]
+
 vector::cbegin
 vector::cend
 vector::clear
