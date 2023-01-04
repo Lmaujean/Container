@@ -2,9 +2,12 @@
 # define VECTOR_HPP
 #include <iostream>
 #include <memory>
-std::vector<int> test;
+#include "utils/iterator/random_access_iterator.hpp"
 
-test.operator[]();
+//std::vector<int> test;
+
+//test.begin()
+
 namespace ft
 {
     template <class T, class Allocator = std::allocator<T> >
@@ -12,15 +15,15 @@ namespace ft
     {
         public:
             typedef T value_type; // Type représentant le type de données stockées dans un vecteur.
-            typedef T allocator_type; // Type qui représente la classe allocator pour l'objet vector.
+            typedef Allocator allocator_type; // Type qui représente la classe allocator pour l'objet vector.
             typedef std::ptrdiff_t difference_type; // Type qui fournit la différence entre les adresses de deux éléments dans un vecteur.
             typedef size_t size_type; // Type qui compte le nombre d'éléments dans un vecteur.
             typedef typename allocator_type::reference reference; // Type qui fournit une référence à un élément stocké dans un vecteur.
             typedef typename allocator_type::const_reference const_reference;  // Type qui fournit une référence à un const élément stocké dans un vecteur. Elle est utilisée pour la lecture et l’utilisation des const opérations.
             typedef typename allocator_type::pointer pointer; // Type qui fournit un pointeur vers un élément d'un vecteur.
             typedef typename allocator_type::const_pointer const_pointer; // Type qui fournit un pointeur vers un élément const d'un vecteur.
-        // typedef random_access_iterator<pointer> iterator; // Type qui fournit un itérateur à accès aléatoire pour lire ou modifier un élément dans un vecteur.
-        // typedef random_access_iterator<const_pointer> const_iterator; // Type qui fournit un itérateur à accès aléatoire qui peut lire un élément const dans un vecteur.
+            typedef random_access_iterator<pointer> iterator; // Type qui fournit un itérateur à accès aléatoire pour lire ou modifier un élément dans un vecteur.
+            typedef random_access_iterator<const_pointer> const_iterator; // Type qui fournit un itérateur à accès aléatoire qui peut lire un élément const dans un vecteur.
         // typedef ft::reverse_iterator<iterator> reverse_iterator; // Type qui fournit un itérateur à accès aléatoire pouvant lire ou modifier un élément d'un vecteur inversé.
         // typedef ft::reverse_iterator<const_iterator> const_reverse_iterator; // Type qui fournit un itérateur à accès aléatoire pouvant lire ou modifier un élément const d'un vecteur inversé.
             
@@ -45,12 +48,15 @@ namespace ft
             size_type size(void) const {return(_size);}
             
             // retourne la taille de l'espace de stockage du vecteur;
-            size_type capacity() const {return(_capacity)};
+            size_type capacity() const {return(_capacity);}
 
-            reference operator[] (size_type n) {return(_data[n])};
+            reference operator[] (size_type n) {return(_data[n]);}
 
-            const_reference operator[] (size_type n) {return(_data[n])};
+            const_reference operator[] (size_type n) const {return(_data[n]);}
 
+            iterator begin(){return iterator(_data);}
+
+            const_iterator begin() const {return const_iterator(_data);}
             // push les éléments a l'interieur de ton vecteur
             void push_back(const value_type &val)
             {

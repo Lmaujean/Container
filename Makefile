@@ -1,7 +1,7 @@
 src      := main.cpp
 inc      :=
 obj      := $(src:%.cpp=%.o)
-NAME     := Container
+NAME     := Containers
 CXX      := c++
 CXXFLAGS := -I$(inc)
 CFLAGS   := -std=c++98 -Wall -Wextra -Werror
