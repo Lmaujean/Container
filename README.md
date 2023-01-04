@@ -58,4 +58,8 @@ vector::shrink_to_fit
 
 vector::size            [x]
 
+<<<<<<< HEAD
 vector::swap
+=======
+vector::swap
+>>>>>>> 6a1ace1e889136f8418fc01f70f64a377c4ed9c6
