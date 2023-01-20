@@ -1,5 +1,4 @@
-#ifndef CLASS_ITERATOR_HPP
-#define CLASS_ITERATOR_HPP
+#pragma once
 
 #include <memory>
 #include <cstring>
@@ -58,5 +57,3 @@ namespace ft
 
 
 }
-
-#endif

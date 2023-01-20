@@ -15,8 +15,8 @@ namespace ft
             typedef std::random_access_iterator_tag     iterator_category;
 
             random_access_iterator(): data(NULL) {}
-			random_access_iterator(T* x) : data(x) {}
-			random_access_iterator(random_access_iterator const & rhs) { *this = rhs; }
+			random_access_iterator(T *_ptr) : data(_ptr) {}
+			random_access_iterator(random_access_iterator const & rhs) {*this = rhs;}
             virtual ~random_access_iterator() {}
 
             pointer base() const
@@ -41,18 +41,18 @@ namespace ft
                 data++;
                 return *this;
             };
-            random_access_iterator & operator++(int)
+            random_access_iterator operator++(int)
             {
                 random_access_iterator tmp = *this;
                 ++this->data;
-                return tmp;
+                return tmp; 
             };
             random_access_iterator & operator--()
             {
                 data--;
                 return *this;
             };
-            random_access_iterator & operator--(int)
+            random_access_iterator operator--(int)
             {
                 random_access_iterator tmp = *this;
                 --this->data;
@@ -74,7 +74,7 @@ namespace ft
             };
 /*************************************************************************/
 
-            random_access_iterator operator+(const difference_type & rhs) const 
+            random_access_iterator operator+(const difference_type & rhs) const
             {
                 return random_access_iterator(this->data + rhs);
             };
@@ -86,9 +86,19 @@ namespace ft
             {
                 return random_access_iterator(this->data - rhs);
             };
-            difference_type operator-(const random_access_iterator & right) const 
+            difference_type operator-(const random_access_iterator & right) const
             {
                 return this->data - right.data;
+            }
+            random_access_iterator &operator+=(difference_type i) 
+            { 
+                data += i; 
+                return *this; 
+            }
+			random_access_iterator &operator-=(difference_type i) 
+            {
+                data -= i; 
+                return *this; 
             }
 /*************************************************************************/
         protected:

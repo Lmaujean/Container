@@ -1,60 +1,42 @@
-vector::assign
+vector::assign          [x]
 
 vector::at              [x]
 
-vector::back
+vector::back            [x]
 
-vector::begin
+vector::begin           [x]
 
 vector::capacity        [x]
 
-vector::cbegin
+vector::clear           [x]
 
-vector::cend
+vector::empty           [x]
 
-vector::clear
+vector::end             [x]
 
-vector::crbegin
+vector::erase           [x]
 
-vector::crend
+vector::front           [x]
 
-vector::data
+vector::insert          [x]
 
-vector::emplace
-
-vector::emplace_back
-
-vector::empty
-
-vector::end
-
-vector::erase
-
-vector::front
-
-vector::get_allocator
-
-vector::insert
-
-vector::max_size
+vector::max_size        [x]
 
 vector::operator[]      [x]
 
-vector::operator=
+vector::operator=       [x]
 
-vector::pop_back
+vector::pop_back        [x]
 
 vector::push_back       [x]
 
-vector::rbegin
+vector::rbegin          [x]
 
-vector::rend
+vector::rend            [x]
 
-vector::reserve
+vector::reserve         [x]
 
 vector::resize          [x]
-
-vector::shrink_to_fit
 
 vector::size            [x]
 
