@@ -154,11 +154,81 @@ namespace ft
                     }
                 }
                 
+                bool empty() const
+                {
+                    return _size == 0;
+                }
+
+                size_type size() const
+                {
+                    return _size;
+                }
+
+                size_type max_size() const
+                {
+                    return allocNode.max_size();
+                }
+                
                 iterator insert(iterator pos, const value_type &val)
                 {
                     (void)pos;
                     return(insert(val).first);
                 }
+
+                mapped_type	& operator[](const key_type & k) 
+                { 
+                    return ((*((this->insert(ft::make_pair(k,mapped_type()))).first)).second); 
+                }
+
+            ft::pair<iterator, bool>	insert(const value_type & val)
+			{
+				node_type	node;
+				if ((node = search_tree(root, val.first)) != TNULL)
+					return (ft::pair<iterator, bool>(iterator(node, maximum(root), TNULL), false));
+
+
+				node = allocNode.allocate(1);
+				node->parent = nullptr;
+				node->data = this->alloc.allocate(1);
+				alloc.construct(node->data, value_type(val.first, val.second));
+				node->left = TNULL;
+				node->right = TNULL;
+				node->color = 1;
+
+				node_type	y = nullptr;
+				node_type	x = this->root;
+
+				while (x != TNULL)
+				{
+					y = x;
+					if (compare(node->data->first, x->data->first))
+						x = x->left;
+					else
+						x = x->right;
+				}
+
+				node->parent = y;
+				if (y == nullptr)
+					root = node;
+				else if (  compare(node->data->first, y->data->first))
+					y->left = node;
+				else
+					y->right = node;
+
+				_size++;
+				if (node->parent == nullptr)
+				{
+					node->color = 0;
+					return (ft::pair<iterator, bool>(iterator(node, maximum(root), TNULL), true));
+				}
+
+				if (node->parent->parent == nullptr)
+					return (ft::pair<iterator, bool>(iterator(node, maximum(root), TNULL), true));
+
+				insert_fix(node);
+				return (ft::pair<iterator, bool>(iterator(search_tree(root, val.first), maximum(root), TNULL), true));
+			}
+
 
         private :
 			key_compare	compare;
@@ -188,5 +258,210 @@ namespace ft
                 return node;
             }
 
+            node_type	search_tree(node_type node, const key_type & key) const
+			{
+				if (node == TNULL || key == node->data->first)
+					return (node);
+				if (compare(key, node->data->first))
+					return (search_tree(node->left, key));
+				return (search_tree(node->right, key));
+			}
+
+            void	right_rotate(node_type x)
+			{
+				node_type	y = x->left;
+				x->left = y->right;
+				if (y->right != TNULL)
+					y->right->parent = x;
+				y->parent = x->parent;
+				if (x->parent == nullptr)
+					this->root = y;
+				else if (x == x->parent->right)
+					x->parent->right = y;
+				else
+					x->parent->left = y;
+				y->right = x;
+				x->parent = y;
+			}
+
+			void	left_rotate(node_type x)
+			{
+				node_type	y = x->right;
+				x->right = y->left;
+				if (y->left != TNULL)
+					y->left->parent = x;
+				y->parent = x->parent;
+				if (x->parent == nullptr)
+					this->root = y;
+				else if (x == x->parent->left)
+					x->parent->left = y;
+				else
+					x->parent->right = y;
+				y->left = x;
+				x->parent = y;
+			}
+
+            void	rb_transplamt (node_type u, node_type v)
+			{
+				if (u->parent == nullptr)
+					root = v;
+				else if (u == u->parent->left)
+					u->parent->left = v;
+				else
+					u->parent->right = v;
+				v->parent = u->parent;
+			}
+
+			void	insert_fix(node_type k)
+			{
+				node_type	u;
+				while (k->parent->color == 1)
+				{
+					if (k->parent == k->parent->parent->right)
+					{
+						u = k->parent->parent->left;
+						if (u->color == 1)
+						{
+							u->color = 0;
+							k->parent->color = 0;
+							k->parent->parent->color = 1;
+							k = k->parent->parent;
+						}
+						else
+						{
+							if (k == k->parent->left)
+							{
+								k = k->parent;
+								right_rotate(k);
+							}
+							k->parent->color = 0;
+							k->parent->parent->color = 1;
+							left_rotate(k->parent->parent);
+						}
+					}
+					else
+					{
+						u = k->parent->parent->right;
+						if (u->color == 1)
+						{
+							u->color = 0;
+							k->parent->color = 0;
+							k->parent->parent->color = 1;
+							k = k->parent->parent;
+						}
+						else
+						{
+							if (k == k->parent->right)
+							{
+								k = k->parent;
+								left_rotate(k);
+							}
+							k->parent->color = 0;
+							k->parent->parent->color = 1;
+							right_rotate(k->parent->parent);
+						}
+					}
+					if (k == root)
+						break;
+				}
+				root->color = 0;
+			}
+
+			void delete_fix(node_type x)
+			{
+				node_type	s;
+				while (x != root && x->color == 0)
+				{
+					if (x == x->parent->left)
+					{
+						s = x->parent->right;
+						if (s->color == 1)
+						{
+							s->color = 0;
+							x->parent->color = 1;
+							left_rotate(x->parent);
+							s = x->parent->right;
+						}
+						if (s->left->color == 0 && s->right->color == 0)
+						{
+							s->color = 1;
+							x = x->parent;
+						}
+						else
+						{
+							if (s->right->color == 0)
+							{
+								s->left->color = 0;
+								s->color = 1;
+								right_rotate(s);
+								s = x->parent->right;
+							}
+							s->color = x->parent->color;
+							x->parent->color = 0;
+							s->right->color = 0;
+							left_rotate(x->parent);
+							x = root;
+						}
+					}
+					else
+					{
+					
+						s = x->parent->left;
+						if (s->color == 1)
+						{
+							s->color = 0;
+							x->parent->color = 1;
+							right_rotate(x->parent);
+							s = x->parent->left;
+						}
+						if (s->right->color == 0 && s->left->color == 0)
+						{
+							s->color = 1;
+							x = x->parent;
+						}
+						else
+						{
+							if (s->left->color == 0)
+							{
+								s->right->color = 0;
+								s->color = 1;
+								left_rotate(s);
+								s = x->parent->left;
+							}
+							s->color = x->parent->color;
+							x->parent->color = 0;
+							s->left->color = 0;
+							right_rotate(x->parent);
+							x = root;
+
+						}
+					}
+				}
+				x->color = 0;
+			}
     };
-}
+
+    template< class Key, class T, class Compare, class Alloc >
+	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs) 	
+		{ return ((lhs.size() == rhs.size()) && ft::equal(lhs.begin(), lhs.end(), rhs.begin())); }
+
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs) 	
+		{ return (!(lhs == rhs)); }
+
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator<( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs) 	
+		{ return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs) 	
+		{ return (!(rhs < lhs)); }
+
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator>( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs) 	
+		{ return (rhs < lhs); }
+
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs) 	
+		{ return (!(lhs < rhs)); }
+};
