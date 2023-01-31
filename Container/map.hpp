@@ -39,8 +39,8 @@ namespace ft
                 typedef typename allocator_type::const_reference        const_reference;
                 typedef typename allocator_type::pointer                pointer;
                 typedef typename allocator_type::const_pointer          const_pointer;
-                // typedef ft::bidirectional_iterator<value_type>          iterator;
-                // typedef ft::bidirectional_iterator<const value_type>    const_iterator;
+                typedef ft::bidirectional_iterator<value_type>          iterator;
+                typedef ft::bidirectional_iterator<const value_type>    const_iterator;
                 typedef ft::reverse_iterator<iterator>                  reverse_ierator;
                 typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
                 typedef typename allocator_type::difference_type        difference_type;
@@ -228,6 +228,184 @@ namespace ft
 				insert_fix(node);
 				return (ft::pair<iterator, bool>(iterator(search_tree(root, val.first), maximum(root), TNULL), true));
 			}
+			iterator	insert(iterator position, const value_type & val)
+			{
+				(void)position;
+				return (insert(val).first);
+			}
+
+			template <class InputIterator>
+			void	insert(InputIterator first, InputIterator last,
+					typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = false)
+			{
+				while (first != last)
+					insert(*first++);
+			}
+
+			void	erase(iterator position)
+			{
+				erase(position->first);
+			}
+
+			size_type	erase(const key_type & key)
+			{
+				node_type	node = this->root;
+				node_type	z = TNULL;
+				node_type	x;
+				node_type	y;
+				while (node != TNULL)
+				{
+					if (node->data->first == key)
+						z = node;
+					if (compare(key, node->data->first))
+						node = node->left;
+					else
+						node = node->right;
+				}
+
+				if (z == TNULL)
+					return(0);
+
+				y = z;
+				int	y_original_color = y->color;
+				if (z->left == TNULL)
+				{
+					x = z->right;
+					rb_transplamt(z, z->right);
+				}
+				else if (z->right == TNULL)
+				{
+					x = z->left;
+					rb_transplamt(z, z->left);
+				}
+				else
+				{
+					y = minimum(z->right);
+					y_original_color = y->color;
+					x = y->right;
+					if (y->parent == z)
+						x->parent = y;
+					else
+					{
+						rb_transplamt(y, y->right);
+						y->right = z->right;
+						y->right->parent = y;
+					}
+
+					rb_transplamt(z, y);
+					y->left = z->left;
+					y->left->parent = y;
+					y->color = z->color;
+				}
+				alloc.destroy(z->data);
+				alloc.deallocate(z->data, 1);
+				allocNode.deallocate(z, 1);
+				if (y_original_color == 0)
+					delete_fix(x);
+				_size--;
+				return (1);
+			}
+
+			void	erase(iterator first, iterator last)
+			{
+				while (first != last)
+					erase(first++);
+			}
+
+			void	swap(map & x)
+			{
+				size_type	tmp_size = x._size;
+				node_type	tmp_root = x.root;
+				node_type	tmp_TNULL = x.TNULL;
+
+				x._size = _size;
+				x.root = root;
+				x.TNULL = TNULL;
+
+				_size = tmp_size;
+				root = tmp_root;
+				TNULL = tmp_TNULL;
+			} 
+
+			void	clear() 
+			{ 
+				erase(begin(), end());
+			}
+
+
+			key_compare	key_comp() const 
+			{ 
+				return (key_compare()); 
+			}
+
+			value_compare	value_comp() const 
+			{ 
+				return (value_compare(key_compare())); 
+			}			
+
+
+			iterator	find(const key_type & k) 
+			{ 
+				return (iterator(search_tree(root, k), maximum(root), TNULL));
+			}
+
+			const_iterator	find(const key_type & k) const
+			{ 
+				return (const_iterator(reinterpret_cast<const_Node>(search_tree(root, k)), reinterpret_cast<const_Node>(maximum(root)), reinterpret_cast<const_Node>(TNULL))); 
+			}
+
+			size_type	count(const key_type & k) const { return ((search_tree(root, k) == TNULL) ? 0 : 1); }
+
+			iterator	lower_bound(const key_type & k)
+			{
+				iterator	it;
+
+				for (it = begin(); it != end(); it++)
+					if (!compare(it->first, k))
+						return (it);
+				return (it);
+			}
+			const_iterator	lower_bound(const key_type & k) const
+			{
+				const_iterator	it;
+
+				for (it = begin(); it != end(); it++)
+					if (!compare(it->first, k))
+						return (it);
+				return (it);
+			}
+			
+			iterator	upper_bound(const key_type & k)
+			{
+				iterator	it;
+
+				for (it = begin(); it != end(); it++)
+					if (compare(k, it->first))
+						return (it);
+				return (it);
+			}
+			const_iterator	upper_bound(const key_type & k) const
+			{
+				const_iterator	it;
+
+				for (it = begin(); it != end(); it++)
+					if (compare(k, it->first))
+						return (it);
+				return (it);
+			}
+			ft::pair<iterator, iterator>	equal_range(const key_type & k)
+			{ 
+				return (ft::pair<iterator, iterator>(lower_bound(k), upper_bound(k)));
+			}
+			ft::pair<const_iterator, const_iterator>	equal_range(const key_type & k) const	
+			{ 
+				return (ft::pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k)));
+			}
+			allocator_type	get_allocator() const 
+			{ 
+				return (allocator_type()); 
+			}
+
 
 
         private :
